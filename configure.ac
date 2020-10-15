@@ -85,21 +85,6 @@ AC_DEFINE_UNQUOTED([OBJPATH_BMC], ["$OBJPATH_BMC"], [The bmc epoch Dbus root])
 AC_ARG_VAR(DEFAULT_TIME_MODE, [The default time mode])
 AS_IF([test "x$DEFAULT_TIME_MODE" == "x"], [DEFAULT_TIME_MODE=Mode::Manual])
 AC_DEFINE_UNQUOTED([DEFAULT_TIME_MODE], [$DEFAULT_TIME_MODE], [The default time mode])
-#AC_CONFIG_FILES([])
-
-#SERVICE_FILE=time-manager-bmc-set-time.service
-#SYSTEMD_DIR=`pkg-config systemd --variable=systemdsystemunitdir`
-
-# Use default if SYSTEMD_DIR is empty
-#if test x"$SYSTEMD_DIR" = "x"; then
-#    SYSTEMD_DIR=/etc/systemd/system
-#fi
-#AC_CONFIG_COMMANDS([cp "$SERVICE_FILE" "$SYSTEMD_DIR"])
-
-#AC_CONFIG_COMMANDS_POST([systemctl enable "$SYSTEMD_DIR/$SERVICE_FILE"])
-#AC_CONFIG_COMMANDS_POST([systemctl start "$SERVICE_FILE"])
-
 
 AC_CONFIG_FILES([Makefile test/Makefile])
-#AC_CONFIG_COMMANDS_POST([cp "$SERVICE_FILE" "$SYSTEMD_DIR"])
 AC_OUTPUT

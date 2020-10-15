@@ -125,12 +125,11 @@ void Manager::updateHostSyncSetting(const std::string& mode){
     try
     {
         bus.call_noreply(method);
-        log<level::INFO>("Updated HostSync setting", entry("ENABLED=%d", 0));
+        log<level::INFO>("Updated HostSync setting");
     }
     catch (const SdBusError &e)
     {
         log<level::ERR>("Error in trying to upgrade Host Bios.",entry("ERR=%s", e.what()));
-        //report<InternalFailure>();
     }
 }
 
