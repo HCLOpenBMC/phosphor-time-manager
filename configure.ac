@@ -24,6 +24,22 @@ PKG_CHECK_MODULES([SDBUSPLUS], [sdbusplus])
 PKG_CHECK_MODULES([PHOSPHOR_LOGGING], [phosphor-logging])
 AX_PTHREAD([], [AC_MSG_ERROR(["pthread required and not found"])])
 
+PKG_PROG_PKG_CONFIG
+AC_ARG_WITH([systemdsystemunitdir],
+     [AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files])],,
+     [with_systemdsystemunitdir=auto])
+AS_IF([test "x$with_systemdsystemunitdir" = "xyes" -o "x$with_systemdsystemunitdir" = "xauto"], [
+     def_systemdsystemunitdir=$($PKG_CONFIG --variable=systemdsystemunitdir systemd)
+
+     AS_IF([test "x$def_systemdsystemunitdir" = "x"],
+  [AS_IF([test "x$with_systemdsystemunitdir" = "xyes"],
+    [AC_MSG_ERROR([systemd support requested but pkg-config unable to query systemd package])])
+    with_systemdsystemunitdir=no],
+   [with_systemdsystemunitdir="$def_systemdsystemunitdir"])])
+AS_IF([test "x$with_systemdsystemunitdir" != "xno"],
+      [AC_SUBST([systemdsystemunitdir], [$with_systemdsystemunitdir])])
+AM_CONDITIONAL([HAVE_SYSTEMD], [test "x$with_systemdsystemunitdir" != "xno"])
+
 # Check/set gtest specific functions.
 PKG_CHECK_MODULES([GTEST], [gtest], [], [AC_MSG_NOTICE([gtest not found, tests will not build])])
 PKG_CHECK_MODULES([GMOCK], [gmock], [], [AC_MSG_NOTICE([gmock not found, tests will not build])])
@@ -48,6 +64,7 @@ AS_IF([test "x$enable_oe_sdk" == "xyes"],
     AC_SUBST([OESDK_TESTCASE_FLAGS], [$testcase_flags])
 )
 
+
 # Check for sdbus++ tool
 AC_PATH_PROG([SDBUSPLUSPLUS], [sdbus++])
 AS_IF([test "x$SDBUSPLUSPLUS" == "x"], AC_MSG_ERROR([Cannot find sdbus++]))
@@ -68,6 +85,21 @@ AC_DEFINE_UNQUOTED([OBJPATH_BMC], ["$OBJPATH_BMC"], [The bmc epoch Dbus root])
 AC_ARG_VAR(DEFAULT_TIME_MODE, [The default time mode])
 AS_IF([test "x$DEFAULT_TIME_MODE" == "x"], [DEFAULT_TIME_MODE=Mode::Manual])
 AC_DEFINE_UNQUOTED([DEFAULT_TIME_MODE], [$DEFAULT_TIME_MODE], [The default time mode])
+#AC_CONFIG_FILES([])
+
+#SERVICE_FILE=time-manager-bmc-set-time.service
+#SYSTEMD_DIR=`pkg-config systemd --variable=systemdsystemunitdir`
+
+# Use default if SYSTEMD_DIR is empty
+#if test x"$SYSTEMD_DIR" = "x"; then
+#    SYSTEMD_DIR=/etc/systemd/system
+#fi
+#AC_CONFIG_COMMANDS([cp "$SERVICE_FILE" "$SYSTEMD_DIR"])
+
+#AC_CONFIG_COMMANDS_POST([systemctl enable "$SYSTEMD_DIR/$SERVICE_FILE"])
+#AC_CONFIG_COMMANDS_POST([systemctl start "$SERVICE_FILE"])
+
 
 AC_CONFIG_FILES([Makefile test/Makefile])
+#AC_CONFIG_COMMANDS_POST([cp "$SERVICE_FILE" "$SYSTEMD_DIR"])
 AC_OUTPUT

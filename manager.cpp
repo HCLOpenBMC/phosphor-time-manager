@@ -26,6 +26,8 @@ namespace time
 {
 
 using namespace phosphor::logging;
+using sdbusplus::exception::SdBusError;
+
 
 Manager::Manager(sdbusplus::bus::bus& bus) : bus(bus), settings(bus)
 {
@@ -45,6 +47,7 @@ Manager::Manager(sdbusplus::bus::bus& bus) : bus(bus), settings(bus)
 void Manager::onPropertyChanged(const std::string& key,
                                 const std::string& value)
 {
+
     assert(key == PROPERTY_TIME_MODE);
 
     // Notify listeners
@@ -109,10 +112,36 @@ bool Manager::setCurrentTimeMode(const std::string& mode)
     }
 }
 
+static constexpr auto systemdBusname = "org.freedesktop.systemd1";
+static constexpr auto systemdPath = "/org/freedesktop/systemd1";
+static constexpr auto systemdInterface = "org.freedesktop.systemd1.Manager";
+
+void Manager::updateHostSyncSetting(const std::string& mode){
+    auto method = bus.new_method_call(systemdBusname,systemdPath ,
+                                      systemdInterface, "StartUnit");
+    auto ServiceFile = "time-manager-bmc-set-time.service";
+    //auto isNtp = 0;
+    method.append(ServiceFile, "replace");
+    try
+    {
+        bus.call_noreply(method);
+        log<level::INFO>("Updated HostSync setting", entry("ENABLED=%d", 0));
+    }
+    catch (const SdBusError &e)
+    {
+        log<level::ERR>("Error in trying to upgrade Host Bios.",entry("ERR=%s", e.what()));
+        //report<InternalFailure>();
+    }
+}
+
+
 void Manager::onTimeModeChanged(const std::string& mode)
 {
-    // When time_mode is updated, update the NTP setting
-    updateNtpSetting(mode);
+   if(mode == "xyz.openbmc_project.Time.Synchronization.Method.HostSync")
+       updateHostSyncSetting(mode); //HostSync mode
+   else
+       updateNtpSetting(mode); //NTP Mode
+
 }
 
 std::string Manager::getSetting(const char* path, const char* interface,
@@ -125,3 +154,4 @@ std::string Manager::getSetting(const char* path, const char* interface,
 
 } // namespace time
 } // namespace phosphor
+
