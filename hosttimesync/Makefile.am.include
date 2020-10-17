@@ -1,7 +1,0 @@
-dist_bin_SCRIPTS = \
-	%reldir%/SetTimeBmc
-
-if HAVE_SYSTEMD
-systemdsystemunit_DATA = \
-	%reldir%/time-manager-bmc-set-time.service
-endif

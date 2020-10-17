@@ -10,7 +10,6 @@
 #include <xyz/openbmc_project/Common/error.hpp>
 
 namespace rules = sdbusplus::bus::match::rules;
-
 namespace // anonymous
 {
 
@@ -120,7 +119,6 @@ void Manager::updateHostSyncSetting(const std::string& mode){
     auto method = bus.new_method_call(systemdBusname,systemdPath ,
                                       systemdInterface, "StartUnit");
     auto ServiceFile = "time-manager-bmc-set-time.service";
-    //auto isNtp = 0;
     method.append(ServiceFile, "replace");
     try
     {
@@ -129,7 +127,7 @@ void Manager::updateHostSyncSetting(const std::string& mode){
     }
     catch (const SdBusError &e)
     {
-        log<level::ERR>("Error in trying to upgrade Host Bios.",entry("ERR=%s", e.what()));
+        log<level::ERR>("failed to update HostSync setting.",entry("ERR=%s", e.what()));
     }
 }
 
