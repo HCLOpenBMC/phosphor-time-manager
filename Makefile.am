@@ -15,6 +15,7 @@ libtimemanager_la_SOURCES = \
 phosphor_timemanager_SOURCES = \
 	main.cpp
 
+include hosttimesync/Makefile.am.include
 phosphor_timemanager_LDADD = libtimemanager.la
 
 generic_cxx_flags = $(PHOSPHOR_DBUS_INTERFACES_CFLAGS) \
