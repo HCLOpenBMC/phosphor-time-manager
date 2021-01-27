@@ -95,7 +95,6 @@ bool setTime(sdbusplus::bus::bus& bus, const microseconds& usec)
     return true;
 }
 
-
 } // namespace utils
 } // namespace time
 } // namespace phosphor

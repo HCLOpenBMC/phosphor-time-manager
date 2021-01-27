@@ -50,8 +50,6 @@ T getProperty(sdbusplus::bus::bus& bus, const char* service, const char* path,
     }
 }
 
-
-
 /** @brief Get service name from object path and interface
  *
  * @param[in] bus          - The Dbus bus object
@@ -93,9 +91,7 @@ std::string modeToStr(Mode mode);
  *
  * @return The value of the property
  */
-
 bool setTime(sdbusplus::bus::bus& bus, const std::chrono::microseconds& timeOfDayUsec);
-
 } // namespace utils
 } // namespace time
 } // namespace phosphor
